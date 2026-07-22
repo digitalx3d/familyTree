@@ -1,0 +1,541 @@
+/* ============================================================================
+   Family tree viewer — styles
+   ----------------------------------------------------------------------------
+   Visual direction: "warm heirloom, modern editorial" (Maya, 2026-07-21 —
+   .aiteam/design/visual-direction.md). Every color, radius, shadow and font
+   decision is a CSS custom property in :root so the whole look is retunable
+   from one place. A future [data-theme="dark"] block slots in here later.
+   ==========================================================================*/
+
+/* ---- self-hosted fonts (same-origin, CSP-safe; no CDN) ------------------ *
+   Both are variable fonts. Fraunces carries an optical-size (opsz) axis in
+   addition to weight — we drive it with `font-optical-sizing: auto`, so big
+   hero names automatically pick up the display cut and tiny card labels the
+   text cut, exactly per Maya's spec. */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/fraunces-latin-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/inter-latin-var.woff2") format("woff2");
+}
+
+:root {
+  /* ---- palette (Maya's tokens, light default) -------------------------- */
+  --bg:             #F7F2EC;   /* page / canvas — warm cream, not stark white */
+  --surface:        #FDFBF8;   /* card + panel surface — barely-there lift */
+  --text-primary:   #2B2420;   /* names — warm ink */
+  --text-secondary: #8A7F73;   /* dates, meta — muted warm gray */
+  --accent:         #C1622D;   /* terracotta — union/marriage lines + focus only */
+  --accent-soft:    #C1622D66; /* accent ~40% — hairline hover, former unions */
+  --line-neutral:   #D8CFC2;   /* parent-child connectors — recede on purpose */
+  --border-hairline:#EFE8DF;   /* 1px card / panel borders */
+  --shadow-color:   43, 36, 32;/* rgb triplet — shadows tinted warm, never gray */
+  --accent-ring:    rgba(193, 98, 45, .16); /* focus glow around inputs */
+  --accent-tint:    rgba(193, 98, 45, .09); /* active list-row wash */
+
+  /* per-person monogram chip colors — deterministic per id (see chipIndex in
+     js/main.js). Muted, inside the warm palette; not avatar-rainbow brights. */
+  --chip-1: #8FA6BD;  /* dusty blue */
+  --chip-2: #9CAF88;  /* sage */
+  --chip-3: #C1622D;  /* terracotta (reuses accent, sparingly) */
+  --chip-4: #C68B6E;  /* clay */
+  --chip-5: #D4A94D;  /* ochre */
+  --chip-6: #B98A93;  /* dusty rose */
+  --chip-7: #6E9B90;  /* muted teal */
+
+  /* ---- type ------------------------------------------------------------ */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ft-name-size: 15px;
+  --ft-bday-size: 11px;
+
+  /* ---- shape + depth --------------------------------------------------- */
+  --ft-radius:      20px;   /* cards + panel: generous, keepsake-book round */
+  --ft-radius-sm:   12px;   /* inputs, list rows */
+  --shadow-card:
+    0 1px 2px rgba(var(--shadow-color), .05),
+    0 10px 28px rgba(var(--shadow-color), .10);
+  --shadow-card-hover:
+    0 2px 4px rgba(var(--shadow-color), .08),
+    0 16px 34px rgba(var(--shadow-color), .15);
+  --shadow-main:
+    0 2px 6px rgba(193, 98, 45, .22),
+    0 16px 34px rgba(var(--shadow-color), .16);
+  --shadow-float:
+    0 8px 30px rgba(var(--shadow-color), .14);
+
+  /* card box (kept in sync with setCardDim in js/main.js) */
+  --ft-card-w:      150px;
+  --ft-card-h:      184px;
+  --ft-avatar-size: 66px;
+
+  /* placeholder "ghost" cards — unknown real relatives used as connectors */
+  --ft-ghost-opacity: .5;
+
+  /* search / jump-to-person */
+  --ft-search-w:    280px;
+  --ft-input-size:  16px;   /* >=16px so mobile Safari doesn't zoom on focus */
+
+  /* relatives list in the detail panel */
+  --ft-rel-avatar-size: 34px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- top bar ------------------------------------------------------------ */
+.ft-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-hairline);
+  z-index: 20;
+}
+.ft-title {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-size: 20px;
+  font-weight: 560;
+  letter-spacing: .1px;
+  color: var(--text-primary);
+}
+.ft-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+/* ---- search / jump-to-person ------------------------------------------- */
+.ft-search {
+  position: relative;
+  width: var(--ft-search-w);
+  max-width: 42vw;
+}
+.ft-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 14px;
+  font-family: var(--font-body);
+  font-size: var(--ft-input-size);
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--ft-radius-sm);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.ft-search-input::placeholder { color: var(--text-secondary); }
+.ft-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.ft-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--ft-radius-sm);
+  box-shadow: var(--shadow-float);
+  z-index: 30;
+}
+.ft-search-results[hidden] { display: none; }
+.ft-search-item {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.ft-search-item--active,
+.ft-search-item:hover { background: var(--accent-tint); }
+.ft-search-item-name {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--text-primary);
+}
+.ft-search-item-year { font-size: 12px; color: var(--text-secondary); }
+
+/* ---- chart canvas ------------------------------------------------------- */
+#FamilyChart {
+  position: fixed;
+  inset: 56px 0 0 0;
+  background: var(--bg);
+  overflow: hidden;
+  touch-action: none;   /* let the library own pan/zoom gestures */
+}
+/* neutralize the vendored dark theme + Roboto default, and retint the library's
+   gender colors to muted palette tones so any chrome it colors by gender (the
+   mini-tree expand pills above each card) harmonizes instead of reading bright. */
+.f3 {
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  background: var(--bg);
+  --male-color: var(--chip-1);
+  --female-color: var(--chip-6);
+  --genderless-color: var(--line-neutral);
+}
+
+/* ---- connectors --------------------------------------------------------- *
+   The library gives every link one class ("link"); js/main.js tags each path
+   as --union (spouse/co-parent) or --parent after every render, reading the
+   bound datum. One strong color spent on exactly one thing — marriage lines. */
+.f3 .link { fill: none; stroke: var(--line-neutral); stroke-width: 1.8px; }
+.f3 path.link.ft-link--parent { stroke: var(--line-neutral); stroke-width: 1.8px; }
+.f3 path.link.ft-link--union  { stroke: var(--accent); stroke-width: 2.3px; }
+/* former/divorced union — ready for a future `divorced` flag in the data
+   (see js/data.js). No divorce field exists yet, so nothing emits this today. */
+.f3 path.link.ft-link--union-former {
+  stroke: var(--accent);
+  stroke-width: 2.3px;
+  opacity: .55;
+  stroke-dasharray: 7 6;
+}
+/* filled diamond at each union midpoint — the family-unit anchor and where the
+   drop-line to children originates. Injected by js/main.js. */
+.ft-union-marker { fill: var(--accent); stroke: none; }
+
+/* ---- person card -------------------------------------------------------- */
+.f3 .card {
+  width: var(--ft-card-w);
+  height: var(--ft-card-h);
+  cursor: pointer;
+}
+/* GPU layer promotion, ON ONLY WHILE THE TREE IS MOVING (js/main.js adds
+   `ft-anim` to the chart during recenters / pan / zoom, then removes it once
+   motion settles). `.card_cont` is the element the library animates via
+   transform + opacity; promoting it lets the soft card shadow rasterize once
+   and merely composite as the card moves, instead of repainting every frame.
+   Scoped to the ~13 on-screen cards and dropped when idle, so we never hold
+   compositor layers (or their memory) permanently — that can hurt more than
+   it helps. */
+.f3.ft-anim .card_cont { will-change: transform; }
+/* Scoped as `.f3 .card .ft-card-inner` (3 classes) so it beats the vendored
+   `.f3 div.card > div` rule that would otherwise stomp the shadow. Vertical
+   layout: photo/chip on top, serif name, then birthdate — per Maya's card ref. */
+.f3 .card .ft-card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 16px 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--ft-radius);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  /* Only the cheap compositor property is animated. box-shadow/border-color are
+     present as STATIC styling (identical settled look) but never transitioned —
+     animating a soft shadow forces a per-frame repaint on every moving card,
+     which is what made recenters feel sluggish. The hover lift still animates. */
+  transition: transform .16s ease;
+  /* keep layout + style recompute contained to the card; does NOT clip the
+     shadow (that's `paint` containment, deliberately avoided here). */
+  contain: layout style;
+}
+.f3 .card:hover .ft-card-inner {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--accent-soft);
+}
+/* focused person: accent border + deeper warm shadow + slight lift, while the
+   accent photo ring (below) marks who's centered at a glance. */
+.f3 .card-main .ft-card-inner {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-main);
+  transform: translateY(-2px);
+}
+
+.ft-card-text { width: 100%; min-width: 0; }
+.ft-card-name {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 550;
+  font-size: var(--ft-name-size);
+  line-height: 1.14;
+  color: var(--text-primary);
+  /* up to two lines, then ellipsize — long married names still fit the card */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ft-card-bday {
+  font-family: var(--font-body);
+  font-size: var(--ft-bday-size);
+  font-weight: 450;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+/* avatar / monogram placeholder (shared shape; chip color via .ft-chip-N) */
+.ft-avatar {
+  flex: 0 0 auto;
+  width: var(--ft-avatar-size);
+  height: var(--ft-avatar-size);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--line-neutral);
+  /* slim surface ring lifts the photo off the card, per the reference */
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--border-hairline);
+}
+/* only the focused person gets the accent photo ring */
+.f3 .card-main .ft-avatar {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent);
+}
+.ft-avatar--placeholder,
+.ft-detail-avatar--placeholder,
+.ft-rel-avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(var(--shadow-color), .30);
+}
+.ft-avatar--placeholder { font-size: 22px; }
+
+/* deterministic monogram-chip palette */
+.ft-chip-1 { background-color: var(--chip-1); }
+.ft-chip-2 { background-color: var(--chip-2); }
+.ft-chip-3 { background-color: var(--chip-3); }
+.ft-chip-4 { background-color: var(--chip-4); }
+.ft-chip-5 { background-color: var(--chip-5); }
+.ft-chip-6 { background-color: var(--chip-6); }
+.ft-chip-7 { background-color: var(--chip-7); }
+
+/* placeholder / connector people: de-emphasized ghost card. Higher-specificity
+   selectors (0,3,x) so they win over the base card + chip rules above. */
+.f3 .card .ft-card-inner--ghost {
+  background: var(--surface);
+  border: 1px dashed var(--line-neutral);
+  box-shadow: none;
+  opacity: var(--ft-ghost-opacity);
+}
+.f3 .card .ft-card-inner--ghost .ft-card-name {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+/* ghosts never get a colored chip — a faded neutral disc instead */
+.f3 .card .ft-card-inner--ghost .ft-avatar {
+  background-color: var(--line-neutral);
+  box-shadow: 0 0 0 3px var(--surface);
+  text-shadow: none;
+  color: var(--surface);
+}
+
+/* mini-tree expand buttons the library injects */
+.f3 .card_family_tree rect { fill: var(--surface); stroke: var(--border-hairline); }
+.f3 .card_family_tree { cursor: pointer; }
+
+/* ---- detail panel ------------------------------------------------------- */
+.ft-detail {
+  position: fixed;
+  top: 56px; right: 0; bottom: 0;
+  width: 340px;
+  max-width: 86vw;
+  background: var(--surface);
+  border-left: 1px solid var(--border-hairline);
+  box-shadow: -10px 0 30px rgba(var(--shadow-color), .12);
+  transform: translateX(105%);
+  transition: transform .24s ease;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+}
+.ft-detail.is-open { transform: translateX(0); }
+.ft-detail-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 10px 0;
+}
+.ft-detail-close {
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 11px;
+  border-radius: var(--ft-radius-sm);
+  transition: background .15s ease, color .15s ease;
+}
+.ft-detail-close:hover { background: var(--bg); color: var(--text-primary); }
+.ft-detail-body { padding: 4px 26px 28px; overflow-y: auto; text-align: center; }
+.ft-detail-avatar {
+  width: 112px; height: 112px;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--line-neutral);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px var(--border-hairline),
+              var(--shadow-float);
+}
+.ft-detail-avatar--placeholder { font-size: 40px; }
+.ft-detail-name {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 560;
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin: 0 0 5px;
+}
+.ft-detail-bday {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+.ft-detail-notes {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.55;
+  text-align: left;
+}
+.ft-muted { color: var(--text-secondary); }
+
+/* ---- categorized relatives (detail panel) ------------------------------ */
+.ft-rel-groups {
+  text-align: left;
+  margin-top: 22px;
+  border-top: 1px solid var(--border-hairline);
+  padding-top: 8px;
+}
+.ft-rel-group { margin-top: 8px; }
+/* <summary> heading: the collapse toggle. Native marker hidden; CSS chevron
+   rotates with the open state. Museum-label styling — quiet uppercase meta. */
+.ft-rel-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 7px 4px 7px 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;               /* Firefox: hide default disclosure triangle */
+}
+.ft-rel-heading::-webkit-details-marker { display: none; }  /* Safari/Chrome */
+.ft-rel-heading::before {          /* chevron: points right collapsed, down open */
+  content: "";
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s ease;
+}
+.ft-rel-group[open] > .ft-rel-heading::before { transform: rotate(45deg); }
+.ft-rel-heading-title { flex: 0 1 auto; }
+.ft-rel-heading-count { font-weight: 500; opacity: .8; }
+.ft-rel-heading:hover { color: var(--accent); }
+.ft-rel-heading:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--ft-radius-sm);
+}
+.ft-rel-list { display: flex; flex-direction: column; gap: 2px; margin-top: 3px; }
+.ft-rel {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  background: transparent;
+  border-radius: var(--ft-radius-sm);
+  font-family: var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background .12s ease;
+}
+.ft-rel:hover { background: var(--accent-tint); }
+.ft-rel-avatar {
+  flex: 0 0 auto;
+  width: var(--ft-rel-avatar-size);
+  height: var(--ft-rel-avatar-size);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--line-neutral);
+}
+.ft-rel-avatar--placeholder { font-size: 12px; }
+.ft-rel-text { min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.ft-rel-name { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.ft-rel-tag { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+.ft-rel-year { font-size: 12px; color: var(--text-secondary); }
+
+/* ---- mobile ------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .ft-hint { display: none; }
+  /* let the search fill the row once the hint is gone */
+  .ft-search { width: auto; max-width: none; flex: 1; margin-left: 4px; }
+  .ft-detail {
+    top: auto; left: 0; right: 0; bottom: 0;
+    width: 100%; max-width: none;
+    height: 62vh;
+    border-left: 0;
+    border-top: 1px solid var(--border-hairline);
+    border-radius: 22px 22px 0 0;
+    transform: translateY(105%);
+    box-shadow: 0 -10px 30px rgba(var(--shadow-color), .16);
+  }
+  .ft-detail.is-open { transform: translateY(0); }
+}
+
+/* ---- reduced motion ----------------------------------------------------- *
+   Honor the OS "reduce motion" setting by dropping the DECORATIVE micro-motion
+   (card hover/lift, panel + input transitions). The recenter slide itself is
+   left intact — it's FUNCTIONAL wayfinding (it shows where a tapped person sits
+   in the family), so js/main.js keeps animating it at full duration, and the
+   GPU promotion on `.card_cont` stays to keep that slide a cheap composite. */
+@media (prefers-reduced-motion: reduce) {
+  .f3 .card .ft-card-inner,
+  .ft-search-input,
+  .ft-detail,
+  .ft-detail-close,
+  .ft-rel { transition: none; }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- Static, self-contained site: no CDN, no external fetches. Lock everything to same-origin.
+       style-src allows 'unsafe-inline' because cards set style attributes and family-chart injects styles.
+       font-src 'self' is REQUIRED: fonts are self-hosted (see fonts/), and without an explicit
+       font-src the strict default-src 'none' would block them. No Google Fonts CDN — CSP stays intact. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Pruden Family Tree</title>
+  <meta name="description" content="An interactive family tree. Tap a person to center the tree on them." />
+
+  <!-- Self-hosted fonts (same-origin, CSP-safe). Preloaded so names — the hero element —
+       don't flash in a fallback serif. Both are variable fonts. -->
+  <link rel="preload" href="fonts/fraunces-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+
+  <!-- library styles, then ours (ours overrides via CSS variables) -->
+  <link rel="stylesheet" href="vendor/family-chart.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header class="ft-topbar">
+    <span class="ft-title">Family Tree</span>
+
+    <!-- search / jump-to-person (behavior + a11y wiring in js/main.js) -->
+    <div class="ft-search">
+      <input id="ft-search-input" class="ft-search-input" type="text"
+             placeholder="Search people…" autocomplete="off" spellcheck="false"
+             role="combobox" aria-autocomplete="list" aria-expanded="false"
+             aria-controls="ft-search-results" aria-label="Search for a person" />
+      <ul id="ft-search-results" class="ft-search-results" role="listbox"
+          aria-label="Search results" hidden></ul>
+    </div>
+
+    <span class="ft-hint">Tap a person to center the tree on them. Drag to pan, scroll to zoom.</span>
+  </header>
+
+  <main id="FamilyChart" class="f3"></main>
+
+  <!-- tap-a-person detail panel (stub; richer version drops in later) -->
+  <aside id="detail-panel" class="ft-detail" aria-hidden="true">
+    <div class="ft-detail-head">
+      <button id="detail-close" class="ft-detail-close" aria-label="Close">&times;</button>
+    </div>
+    <div id="detail-body" class="ft-detail-body"></div>
+  </aside>
+
+  <!-- library (vendored, no CDN). d3 first — family-chart depends on it. -->
+  <script src="vendor/d3.min.js"></script>
+  <script src="vendor/family-chart.min.js"></script>
+  <!-- family data (hand-editable) -->
+  <script src="js/data.js"></script>
+  <!-- app -->
+  <script src="js/main.js"></script>
+</body>
+</html>

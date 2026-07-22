@@ -1,0 +1,45 @@
+# Deploys the static site to GitHub Pages on every push to the default branch.
+# The whole repo root IS the site (index.html at root), so we upload it as-is.
+#
+# ONE-TIME SETUP after the repo is on GitHub:
+#   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# After that, every push to main publishes automatically.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # lets you trigger a deploy by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one deploy at a time; don't cancel an in-progress run.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .          # repo root is the site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

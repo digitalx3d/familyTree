@@ -1,0 +1,21 @@
+# Dependencies — the library and d3 are vendored into /vendor, so the site
+# needs nothing from here at runtime. node_modules is only used to re-vendor.
+node_modules/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+
+# Scratch / test files
+_*.mjs
+tree01.jpg
+
+# Internal team workspace + chat/design scratch — not part of the public site
+.aiteam/
+chat-images/
+
+# Stray design/scratch assets that landed in photos/ — NOT part of the site
+*.af
+*~lock~
+photos/mask.jpg
