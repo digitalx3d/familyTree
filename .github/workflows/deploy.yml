@@ -3,13 +3,13 @@
 #
 # ONE-TIME SETUP after the repo is on GitHub:
 #   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
-# After that, every push to main publishes automatically.
+# After that, every push to master publishes automatically.
 
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:        # lets you trigger a deploy by hand from the Actions tab
 
 permissions:

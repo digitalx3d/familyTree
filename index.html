@@ -8,6 +8,10 @@
        font-src the strict default-src 'none' would block them. No Google Fonts CDN — CSP stays intact. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <!-- Keep this out of search indexes. The site is public-but-unlisted (link-only):
+       anyone with the URL can view it, but crawlers must not index or follow it.
+       Backed by robots.txt at the site root as well. -->
+  <meta name="robots" content="noindex, nofollow" />
   <title>Pruden Family Tree</title>
   <meta name="description" content="An interactive family tree. Tap a person to center the tree on them." />
 
