@@ -805,21 +805,27 @@ window.FAMILY_DATA = [
     id: "steve",
     data: { gender: "M", "first name": "Steve", "last name": "Rohrer",
             birthdate: null, photo: null,
-            notes: "Has 2 daughters; second not yet named." },
+            notes: "Has 2 daughters." },
     rels: { father: "bob-rohrer", mother: "carolyn", spouses: ["anne-rohrer"],
-            children: ["jen-rohrer-clisson"] }
+            children: ["jen-rohrer-clisson", "katie-rohrer"] }
   },
   {
     id: "anne-rohrer",
     data: { gender: "F", "first name": "Anne", "last name": "Rohrer",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["steve"], children: ["jen-rohrer-clisson"] }
+    rels: { spouses: ["steve"], children: ["jen-rohrer-clisson", "katie-rohrer"] }
   },
   {
     id: "jen-rohrer-clisson",
     data: { gender: "F", "first name": "Jen", "last name": "Rohrer-Clisson",
             birthdate: null, photo: null,
             notes: "Daughter of Steve & Anne Rohrer." },
+    rels: { father: "steve", mother: "anne-rohrer" }
+  },
+  {
+    id: "katie-rohrer",
+    data: { gender: "F", "first name": "Katie", "last name": "Rohrer",
+            birthdate: null, photo: null, notes: "" },
     rels: { father: "steve", mother: "anne-rohrer" }
   },
   {
