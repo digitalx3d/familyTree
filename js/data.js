@@ -126,7 +126,8 @@ window.FAMILY_DATA = [
     id: "mark",
     data: { gender: "M", "first name": "Mark", "last name": "Grassi",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["kelly"], children: ["fiona", "brigid"] }
+    rels: { father: "lou-grassi", mother: "lois-grassi",
+            spouses: ["kelly"], children: ["fiona", "brigid"] }
   },
   {
     id: "fiona",
@@ -139,6 +140,36 @@ window.FAMILY_DATA = [
     data: { gender: "F", "first name": "Brigid", "last name": "Grassi",
             birthdate: null, photo: null, notes: "" },
     rels: { father: "mark", mother: "kelly" }
+  },
+
+  /* ---- MARK'S BIRTH FAMILY: Lou + Lois -> Mark & Craig; Craig + Jen -----
+     Mark's parents and his brother Craig's family. Craig & Jen have 2
+     children not yet named — omitted as records (see Sean's precedent),
+     captured in Craig's notes until John has names. -------------------- */
+  {
+    id: "lou-grassi",
+    data: { gender: "M", "first name": "Lou", "last name": "Grassi",
+            birthdate: null, photo: null, notes: "" },
+    rels: { spouses: ["lois-grassi"], children: ["mark", "craig-grassi"] }
+  },
+  {
+    id: "lois-grassi",
+    data: { gender: "F", "first name": "Lois", "last name": "Grassi",
+            birthdate: null, photo: null, notes: "" },
+    rels: { spouses: ["lou-grassi"], children: ["mark", "craig-grassi"] }
+  },
+  {
+    id: "craig-grassi",
+    data: { gender: "M", "first name": "Craig", "last name": "Grassi",
+            birthdate: null, photo: null,
+            notes: "Has 2 children (names to come later)." },
+    rels: { father: "lou-grassi", mother: "lois-grassi", spouses: ["jen-grassi"] }
+  },
+  {
+    id: "jen-grassi",
+    data: { gender: "F", "first name": "Jen", "last name": "Grassi",
+            birthdate: null, photo: null, notes: "" },
+    rels: { spouses: ["craig-grassi"] }
   },
 
   /* ---- UNION 5: Tom + Peg (Peg's 1st marriage) -> Brian, Shannon --------
@@ -452,52 +483,52 @@ window.FAMILY_DATA = [
 
   /* ---- JACK'S AUNT DORIS (paternal — assumption) + STARR BRANCH -----------
      Doris (maiden name Pruden) is a sibling of Jack's father, joined through
-     pruden-grandfather. Descends: Jim -> Amy & Lionel -> Annabelle & Body. --- */
+     pruden-grandfather. Descends: Jim -> Amy & Lionel -> Annabelle & Bode. --- */
   {
     id: "doris",
     data: { gender: "F", "first name": "Doris", "last name": "Starr",
             birthdate: null, photo: null,
             notes: "Jack's aunt (paternal — assumption). Maiden name Pruden." },
-    rels: { father: "pruden-grandfather", spouses: ["frank"], children: ["jim"] }
+    rels: { father: "pruden-grandfather", spouses: ["frank"], children: ["jim-starr"] }
   },
   {
     id: "frank",
     data: { gender: "M", "first name": "Frank", "last name": "Starr",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["doris"], children: ["jim"] }
+    rels: { spouses: ["doris"], children: ["jim-starr"] }
   },
   {
-    id: "jim",
+    id: "jim-starr",
     data: { gender: "M", "first name": "Jim", "last name": "Starr",
             birthdate: null, photo: null, notes: "" },
     rels: { father: "frank", mother: "doris",
-            spouses: ["anne", "janine"], children: ["amy", "lionel", "rachel"] }
+            spouses: ["anne-starr", "janine"], children: ["amy", "lionel", "rachel-starr"] }
   },
   {
-    id: "anne",
+    id: "anne-starr",
     data: { gender: "F", "first name": "Anne", "last name": "Starr",
             birthdate: null, photo: null, notes: "Maiden name unknown." },
-    rels: { spouses: ["jim"], children: ["amy", "lionel"] }
+    rels: { spouses: ["jim-starr"], children: ["amy", "lionel"] }
   },
   {
     id: "amy",
     data: { gender: "F", "first name": "Amy", "last name": "Starr",
             birthdate: null, photo: null,
             notes: "Oldest. Has 2 daughters — omitted for now." },
-    rels: { father: "jim", mother: "anne" }
+    rels: { father: "jim-starr", mother: "anne-starr" }
   },
   {
     id: "lionel",
     data: { gender: "M", "first name": "Lionel", "last name": "Starr",
             birthdate: null, photo: null, notes: "" },
-    rels: { father: "jim", mother: "anne",
-            spouses: ["martha"], children: ["annabelle", "body"] }
+    rels: { father: "jim-starr", mother: "anne-starr",
+            spouses: ["martha"], children: ["annabelle", "bode"] }
   },
   {
     id: "martha",
     data: { gender: "F", "first name": "Martha", "last name": "Starr",
             birthdate: null, photo: null, notes: "Maiden name unknown." },
-    rels: { spouses: ["lionel"], children: ["annabelle", "body"] }
+    rels: { spouses: ["lionel"], children: ["annabelle", "bode"] }
   },
   {
     id: "annabelle",
@@ -507,10 +538,10 @@ window.FAMILY_DATA = [
     rels: { father: "lionel", mother: "martha" }
   },
   {
-    id: "body",
-    data: { gender: "M", "first name": "Body", "last name": "Starr",
+    id: "bode",
+    data: { gender: "M", "first name": "Bode", "last name": "Starr",
             birthdate: null, photo: null,
-            notes: "Age 16 as of 2026 (~2010). NAME UNCONFIRMED — possibly Brody." },
+            notes: "Age 16 as of 2026 (~2010)." },
     rels: { father: "lionel", mother: "martha" }
   },
 
@@ -521,26 +552,26 @@ window.FAMILY_DATA = [
     id: "janine",
     data: { gender: "F", "first name": "Janine", "last name": "Starr",
             birthdate: null, photo: null, notes: "Jim Starr's second wife." },
-    rels: { spouses: ["jim"], children: ["rachel"] }
+    rels: { spouses: ["jim-starr"], children: ["rachel-starr"] }
   },
   {
-    id: "rachel",
+    id: "rachel-starr",
     data: { gender: "F", "first name": "Rachel", "last name": "Starr",
             birthdate: null, photo: null,
             notes: "Maiden name Starr. (Distinct from Rachael Monks — different spelling.)" },
-    rels: { father: "jim", mother: "janine", spouses: ["jason"], children: ["ben"] }
+    rels: { father: "jim-starr", mother: "janine", spouses: ["jason"], children: ["ben"] }
   },
   {
     id: "jason",
     data: { gender: "M", "first name": "Jason", "last name": "?",
             birthdate: null, photo: null, notes: "Rachel's husband; last name unknown." },
-    rels: { spouses: ["rachel"], children: ["ben"] }
+    rels: { spouses: ["rachel-starr"], children: ["ben"] }
   },
   {
     id: "ben",
     data: { gender: "M", "first name": "Ben", "last name": "?",
             birthdate: null, photo: null, notes: "" },
-    rels: { father: "jason", mother: "rachel" }
+    rels: { father: "jason", mother: "rachel-starr" }
   },
 
   /* ========================================================================
@@ -846,44 +877,44 @@ window.FAMILY_DATA = [
             children: ["peg", "terry", "bob-byrnes", "maryann"] }
   },
 
-  /* ---- TERRY BYRNES (Peg's sibling) + Diane -> Kevin, David, Kelly ------- */
+  /* ---- TERRY BYRNES (Peg's sibling) + Dianne -> Kevin, David, Kelly ------- */
   {
     id: "terry",
     data: { gender: "M", "first name": "Terry", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
     rels: { father: "robert-byrnes", mother: "mary-byrnes",
-            spouses: ["diane"], children: ["kevin", "david", "kelly-byrnes"] }
+            spouses: ["dianne"], children: ["kevin-byrnes", "david-byrnes", "kelly-byrnes"] }
   },
   {
-    id: "diane",
-    data: { gender: "F", "first name": "Diane", "last name": "Byrnes",
+    id: "dianne",
+    data: { gender: "F", "first name": "Dianne", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["terry"], children: ["kevin", "david", "kelly-byrnes"] }
+    rels: { spouses: ["terry"], children: ["kevin-byrnes", "david-byrnes", "kelly-byrnes"] }
   },
   {
-    id: "kevin",
+    id: "kevin-byrnes",
     data: { gender: "M", "first name": "Kevin", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
-    rels: { father: "terry", mother: "diane", spouses: ["laurie"] }
+    rels: { father: "terry", mother: "dianne", spouses: ["laurie-byrnes"] }
   },
   {
-    id: "laurie",
+    id: "laurie-byrnes",
     data: { gender: "F", "first name": "Laurie", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["kevin"] }
+    rels: { spouses: ["kevin-byrnes"] }
   },
   {
-    id: "david",
+    id: "david-byrnes",
     data: { gender: "M", "first name": "David", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
-    rels: { father: "terry", mother: "diane" }
+    rels: { father: "terry", mother: "dianne" }
   },
   {
     id: "kelly-byrnes",
     data: { gender: "F", "first name": "Kelly", "last name": "Byrnes",
             birthdate: null, photo: null,
             notes: "(2nd Kelly in tree.)" },
-    rels: { father: "terry", mother: "diane" }
+    rels: { father: "terry", mother: "dianne" }
   },
 
   /* ---- BOB BYRNES SR. (Peg's sibling; 2 marriages) ----------------------
@@ -895,7 +926,7 @@ window.FAMILY_DATA = [
             birthdate: null, photo: null, notes: "Bob Sr. (4th Bob in tree.)" },
     rels: { father: "robert-byrnes", mother: "mary-byrnes",
             spouses: ["bob-byrnes-ex", "cheryl"],
-            children: ["bobby", "michael-byrnes", "lauren"] }
+            children: ["bobby-byrnes", "michael-byrnes", "lauren"] }
   },
   {
     id: "bob-byrnes-ex",
@@ -903,7 +934,7 @@ window.FAMILY_DATA = [
             birthdate: null, photo: null,
             notes: "Bob Byrnes Sr.'s first wife; mother of Bobby & Michael. Name unknown (placeholder).",
             placeholder: true },
-    rels: { spouses: ["bob-byrnes"], children: ["bobby", "michael-byrnes"] }
+    rels: { spouses: ["bob-byrnes"], children: ["bobby-byrnes", "michael-byrnes"] }
   },
   {
     id: "cheryl",
@@ -912,7 +943,7 @@ window.FAMILY_DATA = [
     rels: { spouses: ["bob-byrnes"], children: ["lauren"] }
   },
   {
-    id: "bobby",
+    id: "bobby-byrnes",
     data: { gender: "M", "first name": "Bobby", "last name": "Byrnes",
             birthdate: null, photo: null,
             notes: "Married with children — details unknown, omitted for now." },
@@ -924,14 +955,14 @@ window.FAMILY_DATA = [
             birthdate: null, photo: null, notes: "" },
     rels: { father: "bob-byrnes", mother: "bob-byrnes-ex",
             spouses: ["dana"],
-            children: ["michael-byrnes-jr", "nicholas", "rebecca"] }
+            children: ["michael-byrnes-jr", "nicholas-byrnes", "rebecca-byrnes-patten"] }
   },
   {
     id: "dana",
     data: { gender: "F", "first name": "Dana", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
     rels: { spouses: ["michael-byrnes"],
-            children: ["michael-byrnes-jr", "nicholas", "rebecca"] }
+            children: ["michael-byrnes-jr", "nicholas-byrnes", "rebecca-byrnes-patten"] }
   },
   {
     id: "michael-byrnes-jr",
@@ -940,14 +971,14 @@ window.FAMILY_DATA = [
     rels: { father: "michael-byrnes", mother: "dana" }
   },
   {
-    id: "nicholas",
+    id: "nicholas-byrnes",
     data: { gender: "M", "first name": "Nicholas", "last name": "Byrnes",
             birthdate: null, photo: null, notes: "" },
     rels: { father: "michael-byrnes", mother: "dana" }
   },
   {
-    id: "rebecca",
-    data: { gender: "F", "first name": "Rebecca", "last name": "Byrnes",
+    id: "rebecca-byrnes-patten",
+    data: { gender: "F", "first name": "Rebecca", "last name": "Byrnes-Patten",
             birthdate: null, photo: null, notes: "" },
     rels: { father: "michael-byrnes", mother: "dana" }
   },
@@ -986,27 +1017,27 @@ window.FAMILY_DATA = [
             birthdate: null, photo: null,
             notes: "Goes by Annie. Maiden name Byrnes." },
     rels: { father: "robert-byrnes", mother: "mary-byrnes",
-            spouses: ["fred"], children: ["kathy", "karen", "sean"] }
+            spouses: ["fred"], children: ["kathy-temple", "karen-temple", "sean-temple"] }
   },
   {
     id: "fred",
     data: { gender: "M", "first name": "Fred", "last name": "Temple",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["maryann"], children: ["kathy", "karen", "sean"] }
+    rels: { spouses: ["maryann"], children: ["kathy-temple", "karen-temple", "sean-temple"] }
   },
   {
-    id: "kathy",
+    id: "kathy-temple",
     data: { gender: "F", "first name": "Kathy", "last name": "Temple",
             birthdate: null, photo: null, notes: "Never married; no children." },
     rels: { father: "fred", mother: "maryann" }
   },
   {
-    id: "karen",
+    id: "karen-temple",
     data: { gender: "F", "first name": "Karen", "last name": "Temple",
             birthdate: null, photo: null,
             notes: "Maiden name Temple. Son Matthew from her first marriage; now married to Dan (last name unknown)." },
     rels: { father: "fred", mother: "maryann",
-            spouses: ["karen-ex", "dan-karen"], children: ["matthew"] }
+            spouses: ["karen-ex", "dan-karen"], children: ["matthew-temple"] }
   },
   {
     id: "karen-ex",
@@ -1014,34 +1045,34 @@ window.FAMILY_DATA = [
             birthdate: null, photo: null,
             notes: "Karen's first husband; Matthew's father. Name unknown (placeholder).",
             placeholder: true },
-    rels: { spouses: ["karen"], children: ["matthew"] }
+    rels: { spouses: ["karen-temple"], children: ["matthew-temple"] }
   },
   {
     id: "dan-karen",
     data: { gender: "M", "first name": "Dan", "last name": "?",
             birthdate: null, photo: null,
             notes: "Karen's current husband; last name unknown. (2nd Dan in tree.)" },
-    rels: { spouses: ["karen"] }
+    rels: { spouses: ["karen-temple"] }
   },
   {
-    id: "matthew",
+    id: "matthew-temple",
     data: { gender: "M", "first name": "Matthew", "last name": "Temple",
             birthdate: null, photo: null,
             notes: "Karen's son from her first marriage." },
-    rels: { father: "karen-ex", mother: "karen" }
+    rels: { father: "karen-ex", mother: "karen-temple" }
   },
   {
-    id: "sean",
+    id: "sean-temple",
     data: { gender: "M", "first name": "Sean", "last name": "Temple",
             birthdate: null, photo: null,
             notes: "Has 2 children (a daughter and a son) — names unknown, omitted for now." },
-    rels: { father: "fred", mother: "maryann", spouses: ["stephanie"] }
+    rels: { father: "fred", mother: "maryann", spouses: ["stephanie-temple"] }
   },
   {
-    id: "stephanie",
+    id: "stephanie-temple",
     data: { gender: "F", "first name": "Stephanie", "last name": "Temple",
             birthdate: null, photo: null, notes: "" },
-    rels: { spouses: ["sean"] }
+    rels: { spouses: ["sean-temple"] }
   }
 
 ];

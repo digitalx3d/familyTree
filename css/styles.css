@@ -192,7 +192,15 @@ html, body {
   background: var(--bg);
   overflow: hidden;
   touch-action: none;   /* let the library own pan/zoom gestures */
+  transition: transform .24s ease;
 }
+/* When the detail panel is open (desktop side sheet), slide the whole canvas
+   left by half the panel width so the focused card centers in the free space
+   beside the panel instead of under it. --panel-shift is set from the panel's
+   live width in js/main.js. The library's recenter still centers the card in
+   the container's own middle; this constant offset moves that middle into the
+   visible area. Suppressed on mobile below, where the panel is a bottom sheet. */
+#FamilyChart.ft-shift { transform: translateX(calc(var(--panel-shift, 170px) * -1)); }
 /* neutralize the vendored dark theme + Roboto default, and retint the library's
    gender colors to muted palette tones so any chrome it colors by gender (the
    mini-tree expand pills above each card) harmonizes instead of reading bright. */
@@ -432,12 +440,51 @@ html, body {
 .ft-muted { color: var(--text-secondary); }
 
 /* ---- categorized relatives (detail panel) ------------------------------ */
-.ft-rel-groups {
+/* Outer "Relatives" section: one collapsible wrapping every category, open by
+   default. The top divider that used to sit on .ft-rel-groups moves here so the
+   whole section reads as one block hanging off the bio above it. */
+.ft-rel-outer {
   text-align: left;
   margin-top: 22px;
   border-top: 1px solid var(--border-hairline);
-  padding-top: 8px;
+  padding-top: 4px;
 }
+.ft-rel-outer-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 4px 9px 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;               /* Firefox: hide default disclosure triangle */
+}
+.ft-rel-outer-summary::-webkit-details-marker { display: none; }  /* Safari/Chrome */
+.ft-rel-outer-summary::before {   /* chevron: right collapsed, down open */
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s ease;
+}
+.ft-rel-outer[open] > .ft-rel-outer-summary::before { transform: rotate(45deg); }
+.ft-rel-outer-summary:hover { color: var(--accent); }
+.ft-rel-outer-summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--ft-radius-sm);
+}
+.ft-rel-outer-title { flex: 0 1 auto; }
+.ft-rel-groups { text-align: left; padding-left: 2px; }
 .ft-rel-group { margin-top: 8px; }
 /* <summary> heading: the collapse toggle. Native marker hidden; CSS chevron
    rotates with the open state. Museum-label styling — quiet uppercase meta. */
@@ -524,6 +571,8 @@ html, body {
     box-shadow: 0 -10px 30px rgba(var(--shadow-color), .16);
   }
   .ft-detail.is-open { transform: translateY(0); }
+  /* Bottom sheet, not a side sheet: don't shift the canvas — keep it true-centered. */
+  #FamilyChart.ft-shift { transform: none; }
 }
 
 /* ---- reduced motion ----------------------------------------------------- *
@@ -538,4 +587,8 @@ html, body {
   .ft-detail,
   .ft-detail-close,
   .ft-rel { transition: none; }
+  /* The panel-open canvas shift is a repositioning transition; drop its tween
+     under reduce-motion (the final offset still applies, it just snaps). The
+     library's functional recenter slide is unaffected — it's driven in JS. */
+  #FamilyChart { transition: none; }
 }

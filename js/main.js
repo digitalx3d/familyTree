@@ -308,6 +308,18 @@
       });
       return out;
     }
+    // STEP-CHILDREN = the inverse of stepParentsOf: a child of my spouse who isn't
+    // also my blood child (my partner's kid from another relationship). Y is X's
+    // step-parent EXACTLY when X is Y's step-child, so this is stepParentsOf run
+    // the other way down the graph — the downward mirror the step-grandchild tier
+    // needs. Ghosts are traversed THROUGH (dropped later by take()).
+    function stepChildrenOf(id) {
+      var mine = childrenOf(id), out = Object.create(null);
+      spousesOf(id).forEach(function (sp) {
+        childrenOf(sp).forEach(function (c) { if (mine.indexOf(c) < 0) out[c] = true; });
+      });
+      return out;
+    }
 
     var stepParents = stepParentsOf(focusId);
     var stepSiblings = stepSiblingsOf(focusId);
@@ -330,6 +342,30 @@
     // Step cousins = children of ALL step aunts/uncles (from both routes).
     var stepCousins = Object.create(null);
     keys(stepAU).forEach(function (au) { childrenOf(au).forEach(function (c) { stepCousins[c] = true; }); });
+
+    // Step-grandparents = UNION of two routes, one tier up from the step-parent /
+    // step-aunt logic above:
+    //   (A) the step-parents of the focus's BLOOD parents (a parent's step-parent
+    //       is the focus's grandparent's later spouse — one gen up = step-grandparent),
+    //   (B) the blood parents of the focus's OWN step-parents (your step-parent's
+    //       parents). Union + dedupe; blood grandparents are claimed first below so
+    //       they never land here.
+    var stepGrandparents = Object.create(null);
+    myParents.forEach(function (p) { keys(stepParentsOf(p)).forEach(function (s) { stepGrandparents[s] = true; }); });
+    keys(stepParents).forEach(function (sp) { parentsOf(sp).forEach(function (s) { stepGrandparents[s] = true; }); });
+    // Step-grandchildren = the exact downward mirror:
+    //   (A) the step-children of the focus's BLOOD children (a child's step-child
+    //       is that child's spouse's kid from another relationship — one gen down),
+    //   (B) the children of the focus's OWN step-children.
+    // NOTE: route (A) is the step-CHILD of a blood child (child-of-that-child's-
+    // spouse), i.e. the true grandchild-generation mirror of route (A) up top. The
+    // brief's parenthetical ("children of the child's step-parent") describes a
+    // same-generation step-sibling instead, which is the wrong tier; the primary
+    // wording and the stated mirror both mean the grandchild-generation tie coded
+    // here. Flagged to Ethan/John in the handoff.
+    var stepGrandchildren = Object.create(null);
+    children.forEach(function (c) { keys(stepChildrenOf(c)).forEach(function (s) { stepGrandchildren[s] = true; }); });
+    keys(stepChildrenOf(focusId)).forEach(function (sc) { childrenOf(sc).forEach(function (s) { stepGrandchildren[s] = true; }); });
 
     // Assemble. `take()` shares one `seen` set (focus excluded) so nobody is
     // listed twice and ghosts are dropped. Members are RESOLVED in priority
@@ -391,10 +427,15 @@
     resolved["Step-siblings"]            = take(keys(stepSiblings));
     resolved["Step Aunts & Uncles"]      = take(stepAUEntries, labelOf);
     resolved["Step Cousins"]             = take(keys(stepCousins));
+    // Resolved LAST of all, so every blood tier and closer step tier (step-parents,
+    // step-aunts) claims its people first — a blood grandparent/grandchild or a
+    // step-parent is never pulled into these buckets by the shared `seen` dedupe.
+    resolved["Step-grandparents"]        = take(keys(stepGrandparents));
+    resolved["Step-grandchildren"]       = take(keys(stepGrandchildren));
 
     var order = [
-      "Grandparents", "Parents", "Step-parents", "Siblings", "Step-siblings",
-      "Children", "Grandchildren",
+      "Grandparents", "Step-grandparents", "Parents", "Step-parents", "Siblings", "Step-siblings",
+      "Children", "Grandchildren", "Step-grandchildren",
       "Aunts & Uncles", "Step Aunts & Uncles", "Grand-Aunts & Uncles",
       "Nieces & Nephews", "Grand-Nieces & Nephews",
       "1st Cousins", "1st Cousins Once Removed", "1st Cousins Twice Removed",
@@ -543,20 +584,29 @@
   function relativesHtml(id) {
     var cats = computeRelatives(id);
     if (!cats.length) return "";
-    var html = '<div class="ft-rel-groups">';
+    // Every category nests inside ONE outer collapsible section ("Relatives"),
+    // open by default so the panel reads as populated rather than a blank click-
+    // to-reveal. Each inner category stays individually collapsible exactly as
+    // before (same OPEN_BY_DEFAULT set for the close/direct tiers).
+    var inner = "";
     cats.forEach(function (c) {
       var open = OPEN_BY_DEFAULT[c.title] ? " open" : "";
-      html += '<details class="ft-rel-group"' + open + '>' +
-                '<summary class="ft-rel-heading">' +
-                  '<span class="ft-rel-heading-title">' + escapeHtml(c.title) + '</span>' +
-                  '<span class="ft-rel-heading-count">(' + c.members.length + ')</span>' +
-                '</summary>' +
-                '<div class="ft-rel-list">' +
-                  c.members.map(function (m) { return relativeRowHtml(m.id, m.label); }).join("") +
-                '</div>' +
-              '</details>';
+      inner += '<details class="ft-rel-group"' + open + '>' +
+                 '<summary class="ft-rel-heading">' +
+                   '<span class="ft-rel-heading-title">' + escapeHtml(c.title) + '</span>' +
+                   '<span class="ft-rel-heading-count">(' + c.members.length + ')</span>' +
+                 '</summary>' +
+                 '<div class="ft-rel-list">' +
+                   c.members.map(function (m) { return relativeRowHtml(m.id, m.label); }).join("") +
+                 '</div>' +
+               '</details>';
     });
-    return html + '</div>';
+    return '<details class="ft-rel-outer" open>' +
+             '<summary class="ft-rel-outer-summary">' +
+               '<span class="ft-rel-outer-title">Relatives</span>' +
+             '</summary>' +
+             '<div class="ft-rel-groups">' + inner + '</div>' +
+           '</details>';
   }
 
   function openDetail(person, id) {
@@ -578,6 +628,16 @@
 
     panelBody.scrollTop = 0;
     panel.classList.add("is-open");
+    // Shift the tree canvas left by half the panel's actual rendered width so the
+    // focused card lands in the CENTER of the free space beside the side sheet,
+    // not under it. We read the live panel width rather than hardcoding 340. CSS
+    // gates the shift to desktop: on mobile (<=640px) the panel is a full-width
+    // bottom sheet, so `#FamilyChart.ft-shift` resolves to `transform: none` and
+    // the tree stays true-centered (see the mobile media query). The shift stays
+    // on across every recenter while the panel is open, and the library's own
+    // recenter slide plays intact inside the offset container.
+    cont.style.setProperty("--panel-shift", Math.round(panel.getBoundingClientRect().width / 2) + "px");
+    cont.classList.add("ft-shift");
     hydratePhotos(panelBody);   // upgrade the chip if photos/<id>.<ext> exists
   }
 
@@ -588,7 +648,10 @@
     if (btn) focusPerson(btn.getAttribute("data-focus-id"));
   });
 
-  function closeDetail() { panel.classList.remove("is-open"); }
+  function closeDetail() {
+    panel.classList.remove("is-open");
+    cont.classList.remove("ft-shift");   // panel gone: return to full-viewport centering
+  }
   document.getElementById("detail-close").addEventListener("click", closeDetail);
 
   /* ---- build the chart -------------------------------------------------- */
