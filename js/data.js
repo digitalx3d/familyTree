@@ -76,8 +76,8 @@ window.FAMILY_DATA = [
   /* ---- UNION 2: John + Kim -> Campbell, Emmett & Andrew (twins) ---------- */
   {
     id: "kim",
-    data: { gender: "F", "first name": "Kim", "last name": "Plansker",
-            birthdate: "1978-06-29", photo: null, notes: "" },
+    data: { gender: "F", "first name": "Kim", "last name": "Pruden",
+            birthdate: "1978-06-29", photo: null, notes: "Maiden name Plansker." },
     // Kim's parents are Ed Plansker + Doris (Markham) — her side of the family
     // hangs below, joined to the tree through her. See "KIM'S SIDE" section.
     rels: { father: "ed", mother: "doris-markham",
@@ -601,7 +601,15 @@ window.FAMILY_DATA = [
     id: "john-plansker",
     data: { gender: "M", "first name": "John", "last name": "Plansker",
             birthdate: "1929-03-25", photo: null, notes: "" },
-    rels: { father: "frank-plansker", mother: "catherine" }
+    rels: { father: "frank-plansker", mother: "catherine",
+            spouses: ["nancy-plansker"] }
+  },
+  {
+    id: "nancy-plansker",
+    data: { gender: "F", "first name": "Nancy", "last name": "Plansker",
+            birthdate: null, photo: null,
+            notes: "John Plansker's wife. Maiden name unknown." },
+    rels: { spouses: ["john-plansker"] }
   },
 
   /* ---- ED PLANSKER (Kim's father) + 2 marriages: Linda, then Doris ------
@@ -625,33 +633,249 @@ window.FAMILY_DATA = [
     data: { gender: "F", "first name": "Doris", "last name": "Markham",
             birthdate: "1947-03-16", photo: null,
             notes: "Maiden name Guenther. Married Ed Plansker (div. 1997), later Reed Markham (2006)." },
-    rels: { father: "guenther-parent",
+    rels: { father: "earl-guenther", mother: "virginia-raeihle",
             spouses: ["ed", "reed"], children: ["mike", "kim"] }
   },
 
-  /* ---- DORIS'S SISTER: Marion + Terry Latham (stub — more coming later) --
-     Doris & Marion's parents are unknown; guenther-parent is a single shared
-     placeholder connector that groups them as sisters. -------------------- */
+  /* ========================================================================
+     THE GUENTHER SIDE — EARL GUENTHER'S DESCENDANTS
+     Earl Paul Guenther is the father of Doris (Markham) and Marion. His first
+     wife Virginia Raeihle is their mother; he later married Josephine (1970).
+     Replaces the former single `guenther-parent` placeholder connector.
+     ======================================================================== */
+
+  /* ---- THE GUENTHER PARENTS: Earl + Virginia (later Josephine) ----------- */
   {
-    id: "guenther-parent",
-    data: { gender: "M", "first name": "", "last name": "Guenther",
-            birthdate: null, photo: null,
-            notes: "Doris & Marion's parent; both parents unknown (placeholder connector; gender arbitrary).",
-            placeholder: true },
-    rels: { children: ["doris-markham", "marion"] }
+    id: "earl-guenther",
+    data: { gender: "M", "first name": "Earl", "last name": "Guenther",
+            birthdate: "1913-01-10", photo: null,
+            notes: "Full name Earl Paul Guenther. Doris & Marion's father." },
+    rels: { spouses: ["virginia-raeihle", "josephine-guenther"],
+            children: ["doris-markham", "marion"] }
   },
+  {
+    id: "virginia-raeihle",
+    data: { gender: "F", "first name": "Virginia", "last name": "Raeihle",
+            birthdate: "1915-08-01", photo: null,
+            notes: "Maiden name Raeihle; Earl's first wife, mother of Doris & Marion. Died 1968-06-20." },
+    rels: { spouses: ["earl-guenther"], children: ["doris-markham", "marion"] }
+  },
+  {
+    id: "josephine-guenther",
+    data: { gender: "F", "first name": "Josephine", "last name": "Guenther",
+            birthdate: "1920-04-27", photo: null,
+            notes: "Maiden name Jakobowski. Earl's 2nd wife, married 1970. No children with Earl." },
+    rels: { spouses: ["earl-guenther"] }
+  },
+
+  /* ---- DORIS'S SISTER: Marion + Charles Hocker (1st) + Terry Latham (2nd) -
+     Marion's 3 children (John, Nancy, Kathy) are from her first marriage to
+     Charles Hocker. Terry Latham's 3 children are from HIS prior marriage
+     (see the terry-latham-ex placeholder), not from Marion. --------------- */
   {
     id: "marion",
     data: { gender: "F", "first name": "Marion", "last name": "Latham",
             birthdate: "1943-5-27", photo: null,
-            notes: "Maiden name Guenther; Doris Markham's sister. More family to be added later." },
-    rels: { father: "guenther-parent", spouses: ["terry-latham"] }
+            notes: "Maiden name Guenther; Doris Markham's sister." },
+    rels: { father: "earl-guenther", mother: "virginia-raeihle",
+            spouses: ["charles-hocker", "terry-latham"],
+            children: ["john-hocker", "nancy-teneyck", "kathy-cochran"] }
   },
   {
     id: "terry-latham",
     data: { gender: "M", "first name": "Terry", "last name": "Latham",
             birthdate: null, photo: null, notes: "2nd Terry in tree." },
-    rels: { spouses: ["marion"] }
+    rels: { spouses: ["terry-latham-ex", "marion"],
+            children: ["janet-freudenberg", "judi-latham", "sara-latham-elshazly"] }
+  },
+
+  /* ---- MARION'S 1ST MARRIAGE: Charles Hocker -> John, Nancy, Kathy ------- */
+  {
+    id: "charles-hocker",
+    data: { gender: "M", "first name": "Charles", "last name": "Hocker",
+            birthdate: null, photo: null, notes: "Marion's first husband." },
+    rels: { spouses: ["marion"],
+            children: ["john-hocker", "nancy-teneyck", "kathy-cochran"] }
+  },
+  {
+    id: "john-hocker",
+    data: { gender: "M", "first name": "John", "last name": "Hocker",
+            birthdate: "1969-06-19", photo: null, notes: "" },
+    rels: { father: "charles-hocker", mother: "marion",
+            spouses: ["patty-hocker"], children: ["natalie-hocker", "steven-hocker"] }
+  },
+  {
+    id: "patty-hocker",
+    data: { gender: "F", "first name": "Patty", "last name": "Hocker",
+            birthdate: "1967-09-25", photo: null,
+            notes: "Married in; maiden name unknown." },
+    rels: { spouses: ["john-hocker"], children: ["natalie-hocker", "steven-hocker"] }
+  },
+  {
+    id: "natalie-hocker",
+    data: { gender: "F", "first name": "Natalie", "last name": "Hocker",
+            birthdate: null, photo: null, notes: "" },
+    rels: { father: "john-hocker", mother: "patty-hocker" }
+  },
+  {
+    id: "steven-hocker",
+    data: { gender: "M", "first name": "Steven", "last name": "Hocker",
+            birthdate: null, photo: null, notes: "" },
+    rels: { father: "john-hocker", mother: "patty-hocker" }
+  },
+
+  /* ---- MARION'S DAUGHTER: Nancy (Hocker) + Andrew TenEyck -> Paul, Drew, Julianna */
+  {
+    id: "nancy-teneyck",
+    data: { gender: "F", "first name": "Nancy", "last name": "Ten Eyck",
+            birthdate: "1967-08-01", photo: null, notes: "Maiden name Hocker." },
+    rels: { father: "charles-hocker", mother: "marion",
+            spouses: ["andrew-teneyck"],
+            children: ["paul-teneyck", "drew-teneyck", "julia"] }
+  },
+  {
+    id: "andrew-teneyck",
+    data: { gender: "M", "first name": "Andrew", "last name": "Ten Eyck",
+            birthdate: "1964-03-30", photo: null, notes: "" },
+    rels: { spouses: ["nancy-teneyck"],
+            children: ["paul-teneyck", "drew-teneyck", "julia"] }
+  },
+  {
+    id: "paul-teneyck",
+    data: { gender: "M", "first name": "Paul", "last name": "Ten Eyck",
+            birthdate: "1995-04-26", photo: null, notes: "" },
+    rels: { father: "andrew-teneyck", mother: "nancy-teneyck" }
+  },
+  {
+    id: "drew-teneyck",
+    data: { gender: "M", "first name": "Drew", "last name": "Ten Eyck",
+            birthdate: null, photo: null, notes: "" },
+    rels: { father: "andrew-teneyck", mother: "nancy-teneyck",
+            spouses: ["abby-teneyck"] }
+  },
+  {
+    id: "abby-teneyck",
+    data: { gender: "F", "first name": "Abby", "last name": "Ten Eyck",
+            birthdate: null, photo: null, notes: "Drew's wife." },
+    rels: { spouses: ["drew-teneyck"] }
+  },
+  {
+    id: "julia",
+    data: { gender: "F", "first name": "Julia", "last name": "Ten Eyck",
+            birthdate: null, photo: null, notes: "" },
+    rels: { father: "andrew-teneyck", mother: "nancy-teneyck" }
+  },
+
+  /* ---- MARION'S DAUGHTER: Kathy (Hocker) -> Geoffrey Smith, then Al Cochran
+     Kathy married Geoffrey Smith first, then Al Cochran; Matthew & Josh are
+     Geoffrey's. NOTE: her id is `kathy-cochran` to avoid colliding with the
+     existing `kathy` and `kathy-temple` on the Byrnes side. --------------- */
+  {
+    id: "kathy-cochran",
+    data: { gender: "F", "first name": "Katherine", "last name": "Cochran",
+            birthdate: "1966-05-16", photo: null,
+            notes: "Maiden name Hocker; goes by Kathy." },
+    rels: { father: "charles-hocker", mother: "marion",
+            spouses: ["geoffrey-smith", "alan-cochran"], children: ["matthew-smith", "josh-smith"] }
+  },
+  {
+    id: "geoffrey-smith",
+    data: { gender: "M", "first name": "Geoffrey", "last name": "Smith",
+            birthdate: "1949-11-10", photo: null,
+            notes: "Kathy's first husband; father of Matthew & Josh." },
+    rels: { spouses: ["kathy-cochran"], children: ["matthew-smith", "josh-smith"] }
+  },
+  {
+    id: "alan-cochran",
+    data: { gender: "M", "first name": "Al", "last name": "Cochran",
+            birthdate: null, photo: null,
+            notes: "Kathy's second husband. Birthdate unknown." },
+    rels: { spouses: ["kathy-cochran"] }
+  },
+  {
+    id: "matthew-smith",
+    data: { gender: "M", "first name": "Matthew", "last name": "Smith",
+            birthdate: "1993-11-21", photo: null, notes: "" },
+    rels: { father: "geoffrey-smith", mother: "kathy-cochran",
+            spouses: ["clayton-thomas"] }
+  },
+  {
+    id: "clayton-thomas",
+    data: { gender: "M", "first name": "Clayton", "last name": "Thomas",
+            birthdate: null, photo: null, notes: "Matthew's husband." },
+    rels: { spouses: ["matthew-smith"] }
+  },
+  {
+    id: "josh-smith",
+    data: { gender: "M", "first name": "Josh", "last name": "Smith",
+            birthdate: null, photo: null, notes: "" },
+    rels: { father: "geoffrey-smith", mother: "kathy-cochran" }
+  },
+
+  /* ---- TERRY LATHAM'S 1ST MARRIAGE (prior to Marion): Janet, Judi, Sara --
+     Mother unknown; terry-latham-ex is a placeholder connector, following the
+     reed-ex / tom-ex pattern. --------------------------------------------- */
+  {
+    id: "terry-latham-ex",
+    data: { gender: "F", "first name": "", "last name": "",
+            birthdate: null, photo: null,
+            notes: "Terry Latham's prior wife; mother of Janet, Judi, Sara. Name unknown (placeholder).",
+            placeholder: true },
+    rels: { spouses: ["terry-latham"],
+            children: ["janet-freudenberg", "judi-latham", "sara-latham-elshazly"] }
+  },
+  {
+    id: "janet-freudenberg",
+    data: { gender: "F", "first name": "Janet", "last name": "Freudenberg",
+            birthdate: "1965-05-21", photo: null, notes: "Maiden name Latham." },
+    rels: { father: "terry-latham", mother: "terry-latham-ex",
+            spouses: ["kurt-freudenberg"],
+            children: ["kate-freudenberg", "kyle-freudenberg"] }
+  },
+  {
+    id: "kurt-freudenberg",
+    data: { gender: "M", "first name": "Kurt", "last name": "Freudenberg",
+            birthdate: null, photo: null, notes: "Born December 2 (year unknown)." },
+    rels: { spouses: ["janet-freudenberg"],
+            children: ["kate-freudenberg", "kyle-freudenberg"] }
+  },
+  {
+    id: "kate-freudenberg",
+    data: { gender: "F", "first name": "Kate", "last name": "Guditus",
+            birthdate: "1994-11-26", photo: null, notes: "Maiden name Freudenberg." },
+    rels: { father: "kurt-freudenberg", mother: "janet-freudenberg",
+            spouses: ["connor"] }
+  },
+  {
+    id: "connor",
+    data: { gender: "M", "first name": "Connor", "last name": "Guditus",
+            birthdate: null, photo: null, notes: "Kate's husband." },
+    rels: { spouses: ["kate-freudenberg"] }
+  },
+  {
+    id: "kyle-freudenberg",
+    data: { gender: "F", "first name": "Kyle", "last name": "Freudenberg",
+            birthdate: "1996-08-12", photo: null, notes: "Daughter (girl)." },
+    rels: { father: "kurt-freudenberg", mother: "janet-freudenberg",
+            spouses: ["ashley-trick"] }
+  },
+  {
+    id: "ashley-trick",
+    data: { gender: "F", "first name": "Ashley", "last name": "Trick",
+            birthdate: null, photo: null, notes: "Kyle's wife." },
+    rels: { spouses: ["kyle-freudenberg"] }
+  },
+  {
+    id: "judi-latham",
+    data: { gender: "F", "first name": "Judi", "last name": "Latham",
+            birthdate: "1966-11-11", photo: null, notes: "" },
+    rels: { father: "terry-latham", mother: "terry-latham-ex" }
+  },
+  {
+    id: "sara-latham-elshazly",
+    data: { gender: "F", "first name": "Sara", "last name": "Latham-Elshazly",
+            birthdate: "1970-03-31", photo: null, notes: "" },
+    rels: { father: "terry-latham", mother: "terry-latham-ex" }
   },
 
   /* ---- ED + LINDA -> Laura, Sharon (Kim's half-sisters) ---------------- */
